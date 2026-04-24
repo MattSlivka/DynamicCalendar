@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Request Appointment</title>
+</head>
+<body>
+    <main>
+        <form action="/api/intake" method="POST">
+            <label for="full_name">Full Name</label>
+            <input type="text" name="full_name" id="full_name">
+
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email">
+
+            <label for="phone">Phone Number</label>
+            <input type="text" name="phone" id="phone">
+
+            <label for="notes">Additional Notes</label>
+            <input type="text" name="notes" id="notes">
+
+            <label for="date_time">Preferred Date & Time</label>
+            <input type="datetime-local" name="date_time" id="date_time">
+
+            <button type="submit">Submit Request</button>
+        </form>
+    </main>
+</body>
+</html>
+
+<!-- I generated most of this, Claude helped me with the date_time part. -->

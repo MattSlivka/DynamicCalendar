@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Calendar</title>
+</head>
+<body>
+    <div id="calendar"></div>
+    <main>
+        <a href="/login">Staff Login</a>
+        <a href="/intake">Request Appointment</a>
+    </main>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: '/api/public/appointments'
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
+
+
+<!-- Claude helped me out the most with this; it generated both scripts. -->

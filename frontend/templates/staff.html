@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Staff Page</title>
+</head>
+<body>
+    <h1>Pending Requests</h1>
+    <div id="requests-list"></div>
+    <main>
+        <form action="/auth/logout" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+    </main>
+    <script>
+        function loadRequests() {
+            fetch('/api/requests')
+                .then(response => response.json())
+                .then(data => {
+                    var list = document.getElementById('requests-list');
+                    list.innerHTML = '';
+                    data.forEach(function(row) {
+                        list.innerHTML += `
+                            <div>
+                                <p>Contact ID: ${row.contact_id}</p>
+                                <p>Preferred Time: ${row.preferred_time}</p>
+                                <p>Notes: ${row.notes}</p>
+                                <button onclick="approveRequest(${row.request_id})">Approve</button>
+                                <button onclick="rejectRequest(${row.request_id})">Reject</button>
+                            </div>
+                        `;
+                    });
+                });
+        }
+    
+
+        // Call on page load
+        loadRequests();
+
+        function approveRequest(id) {
+            fetch(`/api/requests/${id}/approve`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Request approved!');
+                loadRequests(); // refresh the list
+            });
+        }
+        function rejectRequest(id) {
+            fetch(`/api/requests/${id}/reject`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Request rejected!');
+                loadRequests(); // refresh the list
+            });
+        }
+    </script>
+</body>
+</html>
+
+<!-- Claude generated the main functions on this page. -->
