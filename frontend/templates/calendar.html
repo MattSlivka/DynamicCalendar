@@ -5,13 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Calendar</title>
+     <style>
+        #calendar-wrap {
+            position: relative;
+            max-width: 1100px;
+            margin: 40px auto;
+            background: rgb(245, 245, 220);
+        }
+
+        #calendar {
+            position: relative;
+        }
+
+        .calendar-links {
+            position: absolute;
+            top: 5px;
+            right: 180px; /* Adjust this to sit just left of the Today button */
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .button {
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #f5f5f5;
+            color: #000;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+      
+    </style>
 </head>
+
 <body>
-    <div id="calendar"></div>
-    <main>
-        <a href="/login">Staff Login</a>
-        <a href="/intake">Request Appointment</a>
-    </main>
+    
+    <div id="calendar-wrap">
+        <main class="calendar-links">
+            <a class="button" href="/login">Staff Login</a>
+            <a class="button" href="/intake">Request Appointment</a>
+        </main>
+
+        <div id="calendar"></div>
+    </div>
+    
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
