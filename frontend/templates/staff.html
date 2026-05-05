@@ -42,6 +42,30 @@
         </form>
     </main>
     <script>
+        function showTab(tabId) {
+            var tabContents = document.querySelectorAll('.tab-content');
+            var tabButtons = document.querySelectorAll('.tabs button');
+
+            tabContents.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+
+            tabButtons.forEach(function(button) {
+                button.classList.remove('active');
+            });
+
+            var selectedTab = document.getElementById(tabId);
+            var selectedButton = document.getElementById(tabId + '-tab-button');
+
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
+        }
+        
         function loadRequests() {
             fetch('/api/requests')
                 .then(response => response.json())
@@ -61,10 +85,6 @@
                     });
                 });
         }
-    
-
-        // Call on page load
-        loadRequests();
 
         function approveRequest(id) {
             fetch(`/api/requests/${id}/approve`, {
@@ -74,9 +94,9 @@
             .then(response => response.json())
             .then(data => {
                 alert('Request approved!');
-                loadRequests(); // refresh the list
             });
         }
+        
         function rejectRequest(id) {
             fetch(`/api/requests/${id}/reject`, {
                 method: 'POST',
@@ -85,9 +105,27 @@
             .then(response => response.json())
             .then(data => {
                 alert('Request rejected!');
-                loadRequests(); // refresh the list
             });
         }
+
+        /* ChatGPT explained how to usilize functions and action events to manage tabs */
+        function runTabTests() {
+            console.assert(typeof showTab === 'function', 'showTab should be defined');
+
+            showTab('pending');
+            console.assert(document.getElementById('pending').classList.contains('active'), 'Pending tab should become active');
+            console.assert(!document.getElementById('appointments').classList.contains('active'), 'Appointments tab should not be active when pending is selected');
+
+            showTab('appointments');
+            console.assert(document.getElementById('appointments').classList.contains('active'), 'Appointments tab should become active');
+            console.assert(!document.getElementById('pending').classList.contains('active'), 'Pending tab should not be active when appointments is selected');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('pending');
+            loadRequests();
+            runTabTests();
+        });
     </script>
 </body>
 </html>
