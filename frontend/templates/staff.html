@@ -34,8 +34,25 @@
     
 </head>
 <body>
-    <h1>Pending Requests</h1>
-    <div id="requests-list"></div>
+    <h1>Staff Page</h1>
+    <form action="/auth/logout" method="POST">
+        <button class="logout-button" type="submit">Logout</button>
+    </form>
+
+    <div class="tabs">
+        <button id="pending-tab-button" type="button" onclick="showTab('pending')">Pending Requests</button>
+        <button id="appointments-tab-button" type="button" onclick="showTab('appointments')">My Availability</button>
+    </div>
+
+    <section id="pending" class="tab-content">  
+        <h2>Pending Requests</h2>
+        <div id="requests-list"></div>
+    </section>
+
+    <section id="appointments" class="tab-content">
+        <h2>My Availibility</h2>
+    </section>
+    
     <main>
         <form action="/auth/logout" method="POST">
             <button type="submit">Logout</button>
