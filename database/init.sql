@@ -56,3 +56,6 @@ CREATE TABLE Notifications (
         REFERENCES Appointments(appointment_id) 
         ON DELETE CASCADE
 );
+
+INSERT INTO Contacts (full_name, email, phone, role, username, password_hash)
+VALUES ('Tester', 'testemail@yahoo.com', '0000000000', 'staff', 'admin', 'scrypt:32768:8:1$KaR74yZsn2UPcPG4$1ba516284925eb72f4f50dee34c9871791f2efb4914adc5bc3b9533d6804445fc8ac5bad7b41f26a719bdc852f0c3d581dc096eff842f0b36729394fbf45d911');
