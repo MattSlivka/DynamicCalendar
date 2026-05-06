@@ -9,6 +9,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # Environment Variables
 DATABASE_URL = os.getenv("DATABASE_URL")
 NOTIFIER_URL = os.getenv("NOTIFIER_URL")
+REMINDER_WINDOW_24H = float(os.getenv("REMINDER_WINDOW_24H", 24))
+REMINDER_WINDOW_2H = float(os.getenv("REMINDER_WINDOW_2H", 2))
+TEST_RECIPIENT = os.getenv("TEST_RECIPIENT")
 db_conn = None
 
 scheduler = BackgroundScheduler()
@@ -33,8 +36,8 @@ def db_connection(max_retries=30, retry_delay=5):
 # Querying the Database
 def check_appointments(conn):
     now = datetime.now()
-    time_1 = now + timedelta(hours = 24) #24 Hour Reminder
-    time_2 = now + timedelta(hours = 2) #2 Hour Threshold
+    time_1 = now + timedelta(hours=REMINDER_WINDOW_24H)
+    time_2 = now + timedelta(hours=REMINDER_WINDOW_2H)
     cur = conn.cursor()
     cur.execute("""
         SELECT a.appointment_id, c.email, a.start_time
@@ -50,7 +53,7 @@ def check_appointments(conn):
         upcoming_appointments.append({
             "appointment_id": row[0],
             "type": "reminder_24h",
-            "sent_to": row[1],
+            "sent_to": TEST_RECIPIENT,
             "appt_time": row[2]
         })
     cur.close()
@@ -93,6 +96,7 @@ def send_reminder(appointment, conn):
         conn.commit()
         cur.close()
     except Exception as e:
+        conn.rollback()
         print(f"Database error while logging notification: {e}")
 
 def run_reminders(conn): 
@@ -105,7 +109,7 @@ if __name__ == '__main__':
     db_conn = db_connection()
     if db_conn is None:
         exit(1)
-    scheduler.add_job(run_reminders, 'interval', seconds=900, args = [db_conn])
+    scheduler.add_job(run_reminders, 'interval', seconds=30, args = [db_conn]) # Change seconds to 900!
     scheduler.start()
     try:
         while True:
