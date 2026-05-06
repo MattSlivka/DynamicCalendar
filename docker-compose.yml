@@ -38,6 +38,18 @@ services:
     networks:
       - app_network
     restart: unless-stopped
+  scheduler:
+    depends_on:
+      - database
+      - notifier
+    build: ./scheduler
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NOTIFIER_URL=${NOTIFIER_URL}
+      - TEST_RECIPIENT=${TEST_RECIPIENT}
+    networks:
+      - app_network
+    restart: unless-stopped
 volumes:
   postgres_data:
 networks:
