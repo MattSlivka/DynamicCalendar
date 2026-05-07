@@ -81,7 +81,7 @@
             .then(function(result) {
                 if (result.ok) {
                   mess.style.color = "green";
-                  mess.innerText = result.data.message || "Appointment request submitted successfully. Returning to calendar...";
+                  mess.innerText = "Appointment request submitted successfully. Returning to calendar...";
 
                   setTimeout(function() {
                       window.location.href = "/";
