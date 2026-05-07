@@ -23,21 +23,22 @@ def is_logged_in():
 # Verify Login
 @app.route('/auth/login', methods=['POST'])
 def check_login():
-# Check if staff, then get password hash. Store hash.
-# If generated hash = db hash, then is_valid set to true, return 200.
-# If anything else is not true, return 400; Invalid input.
-	username = request.form.get('username')
-	password = request.form.get('password')
-	cur = conn.cursor()
-	cur.execute("SELECT password_hash, contact_id FROM Contacts WHERE username = %s AND role = 'staff'", (username,))
-	row = cur.fetchone()
-	if row and check_password_hash(row[0], password):
-		session['user_id'] = row[1]
-		cur.close()
-		# return jsonify({"status": "Succesful Login!"}), 200
+    # Check if staff, then get password hash. Store hash.
+    # If generated hash = db hash, then is_valid set to true, return 200.
+    # If anything else is not true, return 400; Invalid input.
+    username = request.form.get('username')
+    password = request.form.get('password')
+    cur = conn.cursor()
+    cur.execute("SELECT password_hash, contact_id FROM Contacts WHERE username = %s AND role = 'staff'", (username,))
+    row = cur.fetchone()
+
+    if row and check_password_hash(row[0], password):
+        session['user_id'] = row[1]
+        cur.close()
         return redirect('/staff')
-	else:
-		cur.close()
+    # return jsonify({"status": "Succesful Login!"}), 200
+    else:
+        cur.close()
 		# return jsonify({"status": "failed"}), 401
         return redirect('/login')
 
@@ -107,7 +108,7 @@ def request_form():
         })
     except requests.exceptions.RequestException as e:
         print(f"Failed to notify staff: {e}")
-    return jsonify({"status": "submitted"}), 200
+    return jsonify({"status": "success", "message": "Appointment request submitted successfully."}), 200
 
 @app.route('/api/appointments', methods=['GET'])
 def get_appointments():
@@ -223,8 +224,8 @@ def reject_request(id):
 
 @app.route('/auth/logout', methods=['POST'])
 def logout():
-    	session.clear()
-    	return redirect('/')
+    session.clear()
+    return redirect('/')
 
 
 if __name__ == '__main__':
