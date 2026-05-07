@@ -5,86 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Staff Page</title>
-
     <style>
       
       body{
-        display:flex;
+        display:block;
         background: rgb(245, 245, 220);
       }
 
-      button{
-            position: absolute;
-            top: 5px;
-            right: 40px; /* Adjust this to sit just left of the Today button */
-            z-index: 10;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            font-size: 14px;
-            padding: 7px 14px;
-        }
+      #logout-button{
+        position: absolute;
+        top: 5px;
+        right: 40px; /* Adjust this to sit just left of the Today button */
+        z-index: 10;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 14px;
+        padding: 7px 14px;
+      }
 
+      .approve-button, .reject-button {
+        top: 5px;
+        right: 10px; /* Adjust this to sit just left of the Today button */
+        z-index: 10;
+        display: inline-flex;
+        justify-content: center;
+        gap: 8px;
+        align-items: center;
+        font-size: 14px;
+        padding: 7px 14px;
+        width: 90px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      
       h1{
         text-align: center;
         width: 100%;
       }
-        
-    </style>
-    
-</head>
 
+      #request-list{
+        width: 75%;
+        max-width: 500px;
+        margin: 30px auto 0 auto;
+        text-align: left;
+      }
+      
+      .request-card{
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .request-card p{
+        margin: 8px 0;
+      }
+
+      .request-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+      }
+      
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .tabs button {
+        border: none;
+        background: transparent;
+        padding: 10px 4px;
+        font-size: 16px;
+        cursor: pointer;
+        color: #333;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tabs button:hover {
+        color: black;
+        border-bottom: 3px solid rgba(0, 0, 0, 0.35);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+
+</head>
 <body>
-    <h1>Staff Page</h1>
-    <form action="/auth/logout" method="POST">
-        <button class="logout-button" type="submit">Logout</button>
-    </form>
 
     <div class="tabs">
-        <button id="pending-tab-button" type="button" onclick="showTab('pending')">Pending Requests</button>
-        <button id="appointments-tab-button" type="button" onclick="showTab('appointments')">My Availability</button>
+        <button onclick="showTab('pending')">Pending Requests</button>
+        <button onclick="showTab('appointments')">Appointments</button>
+        <button onclick="showTab('contacts')">Contacts</button>
     </div>
 
-    <section id="pending" class="tab-content">  
+    <div id="pending" class="tab-content">
         <h2>Pending Requests</h2>
         <div id="requests-list"></div>
-    </section>
+    </div>
 
-    <section id="appointments" class="tab-content">
-        <h2>My Availibility</h2>
-    </section>
-    
+    <div id="appointments" class="tab-content">
+        <h2>Appointments</h2>
+        <p>Approved appointments go here.</p>
+    </div>
+
+    <div id="contacts" class="tab-content">
+        <h2>Contacts</h2>
+        <p>Contact information goes here.</p>
+    </div>
+
     <main>
         <form action="/auth/logout" method="POST">
-            <button type="submit">Logout</button>
+            <button id="logout-button" type="submit">Logout</button>
         </form>
     </main>
-    
+
     <script>
-        function showTab(tabId) {
-            var tabContents = document.querySelectorAll('.tab-content');
-            var tabButtons = document.querySelectorAll('.tabs button');
-
-            tabContents.forEach(function(tab) {
-                tab.classList.remove('active');
-            });
-
-            tabButtons.forEach(function(button) {
-                button.classList.remove('active');
-            });
-
-            var selectedTab = document.getElementById(tabId);
-            var selectedButton = document.getElementById(tabId + '-tab-button');
-
-            if (selectedTab) {
-                selectedTab.classList.add('active');
-            }
-
-            if (selectedButton) {
-                selectedButton.classList.add('active');
-            }
-        }
-        
         function loadRequests() {
             fetch('/api/requests')
                 .then(response => response.json())
@@ -93,17 +138,24 @@
                     list.innerHTML = '';
                     data.forEach(function(row) {
                         list.innerHTML += `
-                            <div>
-                                <p>Contact ID: ${row.contact_id}</p>
-                                <p>Preferred Time: ${row.preferred_time}</p>
-                                <p>Notes: ${row.notes}</p>
-                                <button onclick="approveRequest(${row.request_id})">Approve</button>
-                                <button onclick="rejectRequest(${row.request_id})">Reject</button>
+                            <div class="request-card">
+                                <p><strong>Contact ID:</strong> ${row.contact_id}</p>
+                                <p><strong>Preferred Time:</strong> ${row.preferred_time}</p>
+                                <p><strong>Notes:</strong> ${row.notes}</p>
+                        
+                                <div class="request-actions">
+                                    <button class="approve-button" onclick="approveRequest(${row.request_id})">Approve</button>
+                                    <button class="reject-button" onclick="rejectRequest(${row.request_id})">Reject</button>
+                                </div>
                             </div>
                         `;
                     });
                 });
         }
+    
+
+        // Call on page load
+        loadRequests();
 
         function approveRequest(id) {
             fetch(`/api/requests/${id}/approve`, {
@@ -113,6 +165,7 @@
             .then(response => response.json())
             .then(data => {
                 alert('Request approved!');
+                loadRequests(); // refresh the list
             });
         }
         
@@ -124,27 +177,30 @@
             .then(response => response.json())
             .then(data => {
                 alert('Request rejected!');
+                loadRequests(); // refresh the list
             });
         }
 
-        /* ChatGPT explained how to usilize functions and action events to manage tabs */
-        function runTabTests() {
-            console.assert(typeof showTab === 'function', 'showTab should be defined');
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll(".tab-content");
+            const buttons = document.querySelectorAll(".tabs button");
 
-            showTab('pending');
-            console.assert(document.getElementById('pending').classList.contains('active'), 'Pending tab should become active');
-            console.assert(!document.getElementById('appointments').classList.contains('active'), 'Appointments tab should not be active when pending is selected');
+            tabs.forEach(function(tab) {
+                tab.classList.remove("active");
+            });
 
-            showTab('appointments');
-            console.assert(document.getElementById('appointments').classList.contains('active'), 'Appointments tab should become active');
-            console.assert(!document.getElementById('pending').classList.contains('active'), 'Pending tab should not be active when appointments is selected');
+            buttons.forEach(function(button) {
+                button.classList.remove("active");
+            });
+
+            document.getElementById(tabId).classList.add("active");
+
+            buttons.forEach(function(button) {
+                if (button.getAttribute("onclick") === "showTab('" + tabId + "')") {
+                    button.classList.add("active");
+                }
+            });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            showTab('pending');
-            loadRequests();
-            runTabTests();
-        });
     </script>
 </body>
 </html>
