@@ -28,12 +28,15 @@
     }
     
   </style>
-    
+  
 </head>
 
+  
 <body>
     <main>
-        <form action="/api/intake" method="POST">
+        <p id="form-message"></p>
+
+        <form id="intake-form" action="/api/intake" method="POST">
             <label for="full_name">Full Name</label>
             <input type="text" name="full_name" id="full_name">
 
@@ -50,7 +53,53 @@
             <input type="datetime-local" name="date_time" id="date_time">
 
             <button type="submit">Submit Request</button>
+
         </form>
+
+        <script>
+          document.getElementById("intake-form").addEventListener("submit", function(event){
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const mess = document.getElementById("form-message");
+
+            fetch(form.action, {
+              method: "POST",
+              body: formData
+            })
+
+            .then(function(response){
+              return response.json().then(function(data) {
+                return {
+                    ok: response.ok,
+                    data: data
+                };
+              });
+            })
+
+            .then(function(result) {
+                if (result.ok) {
+                  mess.style.color = "green";
+                  mess.innerText = result.data.message || "Appointment request submitted successfully. Returning to calendar...";
+
+                  setTimeout(function() {
+                      window.location.href = "/";
+                  }, 1500);
+                } 
+                else {
+                  mess.style.color = "red";
+                  mess.innerText = result.data.message || "Invalid input, try again.";
+                }
+            })
+            
+            .catch(function(error) {
+              mess.style.color = "red";
+              mess.innerText = "Something went wrong. Please try again.";
+              console.error(error);
+            });
+          })
+        </script>
     </main>
 </body>
 </html>
